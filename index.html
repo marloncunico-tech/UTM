@@ -1,0 +1,119 @@
+<!-- index.html -->
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Máquina de Ensaio de Tração — Controle</title>
+<link rel="stylesheet" href="style.css">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+</head>
+<body>
+<header>
+  <h1>⚙ Máquina de Ensaio de Tração</h1>
+  <div id="connStatus" class="status disconnected">● Desconectado</div>
+</header>
+
+<main>
+  <!-- Coluna esquerda: Controles -->
+  <section class="panel controls">
+    <h2>Controle</h2>
+
+    <div class="conn-box">
+      <button id="btnConnect" class="btn primary">🔌 Conectar</button>
+      <select id="baudRate">
+        <option value="38400" selected>38400 baud</option>
+        <option value="9600">9600 baud</option>
+        <option value="115200">115200 baud</option>
+      </select>
+    </div>
+
+    <div class="btn-grid">
+      <button id="btnHome" class="btn" disabled>🏠 Home (G28)</button>
+      <button id="btnEmergency" class="btn emergency" disabled>⛔ Emergência (!)</button>
+
+      <button id="btnUpSlow" class="btn" disabled>▲ Cima Lento</button>
+      <button id="btnUpFast" class="btn" disabled>▲▲ Cima Rápido</button>
+      <button id="btnDownSlow" class="btn" disabled>▼ Baixo Lento</button>
+      <button id="btnDownFast" class="btn" disabled>▼▼ Baixo Rápido</button>
+
+      <button id="btnStart" class="btn success" disabled>▶ Iniciar Teste (G02)</button>
+      <button id="btnConfig" class="btn" disabled>⚙ Configurações</button>
+    </div>
+
+    <div class="readout">
+      <div class="readout-item">
+        <span class="label">Deslocamento</span>
+        <span id="valDisp" class="value">0.000 mm</span>
+      </div>
+      <div class="readout-item">
+        <span class="label">Força</span>
+        <span id="valForce" class="value">0.000 kgf</span>
+      </div>
+      <div class="readout-item">
+        <span class="label">Tempo</span>
+        <span id="valTime" class="value">0 ms</span>
+      </div>
+      <div class="readout-item">
+        <span class="label">Pico</span>
+        <span id="valPeak" class="value">0.000 kgf</span>
+      </div>
+    </div>
+
+    <div class="actions">
+      <button id="btnExportCsv" class="btn small">📄 Exportar CSV</button>
+      <button id="btnExportXlsx" class="btn small">📊 Exportar Excel</button>
+      <button id="btnClearChart" class="btn small">🗑 Limpar Gráfico</button>
+    </div>
+  </section>
+
+  <!-- Coluna direita: Gráfico + Terminal -->
+  <section class="panel chart-panel">
+    <h2>Curva Deslocamento × Força</h2>
+    <div class="chart-wrapper">
+      <canvas id="chart"></canvas>
+    </div>
+  </section>
+
+  <section class="panel terminal-panel">
+    <h2>Terminal Serial</h2>
+    <div id="terminal"></div>
+    <div class="terminal-input">
+      <input id="cmdInput" type="text" placeholder="Digite um comando (ex: M503)" disabled>
+      <button id="btnSend" class="btn small" disabled>Enviar</button>
+    </div>
+  </section>
+</main>
+
+<!-- Modal de Configurações -->
+<div id="configModal" class="modal hidden">
+  <div class="modal-content">
+    <h2>Configurações</h2>
+    <div class="form-grid">
+      <label>Velocidade lenta (mm/min)
+        <input id="cfgSlow" type="number" value="20" min="1" max="6400">
+      </label>
+      <label>Velocidade rápida (mm/min)
+        <input id="cfgFast" type="number" value="500" min="1" max="6400">
+      </label>
+      <label>Deslocamento lento (mm)
+        <input id="cfgDispSlow" type="number" value="1" step="0.1" min="0.01">
+      </label>
+      <label>Deslocamento rápido (mm)
+        <input id="cfgDispFast" type="number" value="10" step="0.1" min="0.01">
+      </label>
+      <label>Velocidade do ensaio G02 (mm/min)
+        <input id="cfgTestVel" type="number" value="10" step="0.1" min="0.1">
+      </label>
+    </div>
+    <div class="modal-actions">
+      <button id="btnReadM503" class="btn">📥 Ler da máquina (M503)</button>
+      <button id="btnCloseConfig" class="btn primary">Fechar</button>
+    </div>
+  </div>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
